@@ -1,19 +1,28 @@
 const menuData = [
+
+    {id: 1, category: "Aperatif", name: "Çiğ Köfte ", price: "80 TL", desc: "", img: "https://th.bing.com/th/id/OIP._2VvWjQ1NtSUqvTiHOeA6wHaFj?w=245&h=184&c=7&r=0&o=7&pid=1.7&rm=3" },
+    {id: 1, category: "Aperatif", name: "Patso Ekmek", price: "90 TL", desc: "", img: "https://tse4.mm.bing.net/th/id/OIP.GCcTEGeMFFx3rA5KdHBx4gHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" },
     {id: 1, category: "Aperatif", name: "Tost", price: "100 TL", desc: "", img: "https://th.bing.com/th/id/OIP.5S-ZcCp74DRjhyB22pnnHwHaE7?w=286&h=191&c=7&r=0&o=7&pid=1.7&rm=3" },
+    {id: 1, category: "Aperatif", name: "Patates Porsiyon ", price: "100 TL", desc: "", img: "https://tse4.mm.bing.net/th/id/OIP.IEj36M-0LIoskkcA2qo-tQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" },
+    {id: 1, category: "Aperatif", name: "sucuk ekmek", price: "110 TL", desc: "", img: "https://tse2.mm.bing.net/th/id/OIP.fQs71vkYUp6ua-EGml8GwQHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" },
+    {id: 1, category: "Aperatif", name: "Tavuk Döner ", price: "110 TL", desc: "", img: "https://serdarulkerbufe.com/img/770805652.png" },
+    {id: 1, category: "Aperatif", name: "Hamburger ", price: "110 TL", desc: "", img: "https://static.vecteezy.com/system/resources/previews/021/952/459/original/free-tasty-hamburger-on-transparent-background-free-png.png" },
+    {id: 1, category: "Aperatif", name: "Kumru Ekmek ", price: "130 TL", desc: "", img: "https://cdn.yenicaggazetesi.com/other/2024/03/07/en-kolay-izmir-kumru-tarifi-tadini-damaginizda-kalacak-yenicag-17.jpg" },
+    {id: 1, category: "Aperatif", name: "Bomba Ekmek ", price: "130 TL", desc: "", img: "" },
     { id: 1, category: "Aperatif", name: "Köfte ekmek", price: "150 TL", desc: "", img: "https://img.freepik.com/premium-photo/delicious-turkish-meatballs-sandwich-kofte-ekmek-turkish-name-kofte-ekmek-ekmek-arasi-kofte_693630-4361.jpg?w=1380" },
-    {id: 1, category: "Aperatif", name: "sucuk ekmek", price: "85 TL", desc: "", img: "https://tse2.mm.bing.net/th/id/OIP.fQs71vkYUp6ua-EGml8GwQHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" },
-    {id: 1, category: "Aperatif", name: "Patso", price: "50 TL", desc: "", img: "https://tse4.mm.bing.net/th/id/OIP.GCcTEGeMFFx3rA5KdHBx4gHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" },
-    {id: 1, category: "Aperatif", name: "Çiğ Köfte Dürüm", price: " 60TL", desc: "", img: "https://th.bing.com/th/id/OIP._2VvWjQ1NtSUqvTiHOeA6wHaFj?w=245&h=184&c=7&r=0&o=7&pid=1.7&rm=3" },
-    {id: 1, category: "Aperatif", name: "Çiğ Köfte", price: "600TL", desc: "kg", img: "https://www.cigkofteciomurusta.com/app/view/assets/site_images/1kg_cigkofte.png" },
     
 
     
+    { id: 2, category: "Soğuk İçecekler", name: "Bardak Su", price: "5 TL", desc: "200 ml", img: "https://cdn.dsmcdn.com/ty585/product/media/images/20221104/9/207191027/613266475/1/1_org.jpg" },
+    { id: 2, category: "Soğuk İçecekler", name: "Ayran", price: "15 TL", desc: "200 ml", img: "https://www.gelgorgari.com/image/cache/data/urunler/sutas-ayran-225-ml-600x315.jpg" },
+    { id: 2, category: "Soğuk İçecekler", name: "Soda Çeşitleri", price: "20 TL", desc: "200 ml", img: "https://www.patista.com.tr/wp-content/uploads/2021/05/772-7728679_menu-img-frea-maden-suyu-hd-png-download.png" },
+    { id: 2, category: "Soğuk İçecekler", name: "Gazoz", price: "35 TL", desc: "200 ml", img: "https://th.bing.com/th/id/OIP.f-2PZXBtw1P0uGwHILJmpQHaHa?w=219&h=219&c=7&r=0&o=7&pid=1.7&rm=3" },
+    { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "50 TL", desc: "250 ml", img: "https://th.bing.com/th/id/OIP.mOqKm4z2_vrpL5XY6xYmWgHaHa?w=178&h=180&c=7&r=0&o=7&pid=1.7&rm=3" },
+    { id: 2, category: "Soğuk İçecekler", name: "Yedigün", price: "50 TL", desc: "250 ml", img: "https://lh6.googleusercontent.com/proxy/BfktkBvDO0YUa2q6j_uSt5PIW_83apXhRJu9zO1tyXKVFz7yAENHE5bbdCeC9wD5dv-K9-QfpF82btrE6qakFi0FuRtiRYRomyGbfih5-zE" },
+    { id: 2, category: "Soğuk İçecekler", name: "Black Bruın", price: "50 TL", desc: "250 ml", img: "https://img-bizimtoptan.mncdn.com/Content/Images/Thumbs/1546293.jpeg" },
+    { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "60 TL", desc: "1 LT", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzS9R9WfpFYQJi_nrbu4gVi6ER0DZsZ-yDPA&s" },
+    { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "70 TL", desc: "2,5 LT", img: "https://cdn.dsmcdn.com/ty1524/product/media/images/prod/QC/20240905/16/8865c2f2-32fe-3276-9cae-bd586c19cbb7/1_org_zoom.jpg" },
     
-    { id: 2, category: "Soğuk İçecekler", name: "Ayran", price: "25 TL", desc: "", img: "https://www.gelgorgari.com/image/cache/data/urunler/sutas-ayran-225-ml-600x315.jpg" },
-    { id: 2, category: "Soğuk İçecekler", name: "Gazoz", price: "35 TL", desc: "", img: "https://th.bing.com/th/id/OIP.f-2PZXBtw1P0uGwHILJmpQHaHa?w=219&h=219&c=7&r=0&o=7&pid=1.7&rm=3" },
-    { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "55 TL", desc: "", img: "https://th.bing.com/th/id/OIP.mOqKm4z2_vrpL5XY6xYmWgHaHa?w=178&h=180&c=7&r=0&o=7&pid=1.7&rm=3" },
-    { id: 2, category: "Soğuk İçecekler", name: "Su", price: "10 TL", desc: "", img: "https://th.bing.com/th/id/OIP.rT4U-7U7zlr8ZygfPmElXgAAAA?w=312&h=155&c=7&r=0&o=7&pid=1.7&rm=3" },
-    { id: 2, category: "Soğuk İçecekler", name: "Bardak Su", price: "5 TL", desc: "", img: "https://cdn.dsmcdn.com/ty585/product/media/images/20221104/9/207191027/613266475/1/1_org.jpg" },
 
 
 
