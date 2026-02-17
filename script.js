@@ -2,7 +2,7 @@ const menuData = [
 
     {id: 1, category: "Aperatif", name: "Çiğ Köfte ", price: "80 TL", desc: "", img: "https://th.bing.com/th/id/OIP._2VvWjQ1NtSUqvTiHOeA6wHaFj?w=245&h=184&c=7&r=0&o=7&pid=1.7&rm=3" },
     {id: 1, category: "Aperatif", name: "Patso Ekmek", price: "90 TL", desc: "", img: "https://tse4.mm.bing.net/th/id/OIP.GCcTEGeMFFx3rA5KdHBx4gHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" },
-    {id: 1, category: "Aperatif", name: "Tost", price: "100 TL", desc: "", img: "https://th.bing.com/th/id/OIP.5S-ZcCp74DRjhyB22pnnHwHaE7?w=286&h=191&c=7&r=0&o=7&pid=1.7&rm=3" },
+    {id: 1, category: "Aperatif", name: "Tost", price: "80 TL", desc: "", img: "https://th.bing.com/th/id/OIP.5S-ZcCp74DRjhyB22pnnHwHaE7?w=286&h=191&c=7&r=0&o=7&pid=1.7&rm=3" },
     {id: 1, category: "Aperatif", name: "Patates Porsiyon ", price: "100 TL", desc: "", img: "https://tse4.mm.bing.net/th/id/OIP.IEj36M-0LIoskkcA2qo-tQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" },
     {id: 1, category: "Aperatif", name: "sucuk ekmek", price: "110 TL", desc: "", img: "https://tse2.mm.bing.net/th/id/OIP.fQs71vkYUp6ua-EGml8GwQHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" },
     {id: 1, category: "Aperatif", name: "Tavuk Döner ", price: "110 TL", desc: "", img: "https://serdarulkerbufe.com/img/770805652.png" },
