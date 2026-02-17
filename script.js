@@ -20,8 +20,10 @@ const menuData = [
     { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "50 TL", desc: "250 ml", img: "https://th.bing.com/th/id/OIP.mOqKm4z2_vrpL5XY6xYmWgHaHa?w=178&h=180&c=7&r=0&o=7&pid=1.7&rm=3" },
     { id: 2, category: "Soğuk İçecekler", name: "Yedigün", price: "50 TL", desc: "250 ml", img: "https://lh6.googleusercontent.com/proxy/BfktkBvDO0YUa2q6j_uSt5PIW_83apXhRJu9zO1tyXKVFz7yAENHE5bbdCeC9wD5dv-K9-QfpF82btrE6qakFi0FuRtiRYRomyGbfih5-zE" },
     { id: 2, category: "Soğuk İçecekler", name: "Black Bruın", price: "50 TL", desc: "250 ml", img: "https://img-bizimtoptan.mncdn.com/Content/Images/Thumbs/1546293.jpeg" },
+    { id: 2, category: "Soğuk İçecekler", name: "Redbull", price: "60 TL", desc: "250 ml", img: "https://cdn.dsmcdn.com/mnresize/420/620/ty1644/prod/QC/20250305/20/f836bb57-2ae8-3854-8f74-dc47421bfa06/1_org_zoom.jpg" },
     { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "60 TL", desc: "1 LT", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzS9R9WfpFYQJi_nrbu4gVi6ER0DZsZ-yDPA&s" },
     { id: 2, category: "Soğuk İçecekler", name: "Pepsi", price: "70 TL", desc: "2,5 LT", img: "https://cdn.dsmcdn.com/ty1524/product/media/images/prod/QC/20240905/16/8865c2f2-32fe-3276-9cae-bd586c19cbb7/1_org_zoom.jpg" },
+    
     
 
 
