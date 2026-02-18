@@ -12,6 +12,51 @@ onSnapshot(collection(db, "menu"), (snapshot) => {
         ...doc.data()
     }));
 
+    // --- 1. SENİN İSTEDİĞİN KATEGORİ SIRALAMASI ---
+    // Buraya hangi kategorinin önce gelmesini istiyorsan o sırayla yaz.
+    const kategoriSiralamasi = [
+        "Aperatif",
+        "Soğuk İçecekler",
+        "Sıcak İçecekler",
+        "Sandviçler",
+        "Tatlılar",
+        "İnternet Kafe",
+        "Playstation"
+    ];
+
+    // --- 2. SIRALAMA MOTORU ---
+    menuData.sort((a, b) => {
+        // A) Önce Kategori Sırasını Bul
+        let siraA = kategoriSiralamasi.indexOf(a.Kategori);
+        let siraB = kategoriSiralamasi.indexOf(b.Kategori);
+
+        // Listede olmayan (yeni eklenmiş) bir kategori varsa en sona at
+        if (siraA === -1) siraA = 999;
+        if (siraB === -1) siraB = 999;
+
+        // B) Eğer kategoriler farklıysa, kategori sırasına göre diz
+        if (siraA !== siraB) {
+            return siraA - siraB;
+        }
+
+        // C) Eğer kategoriler AYNIYSA (ikisi de "Soğuk İçecekler" ise), Fiyata göre diz
+        let fiyatA = parseFloat(a.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
+        let fiyatB = parseFloat(b.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
+        
+        return fiyatA - fiyatB; // Ucuzdan pahalıya
+    });
+
+    console.log("Özel Sıralı Veriler:", menuData);
+
+    if (menuData.length === 0) {
+        menuContainer.innerHTML = "<p style='text-align:center;'>Menü boş.</p>";
+        return;
+    }
+
+    updateCategories(menuData); // Butonları oluştur
+    displayMenu(menuData);      // Ürünleri listele
+});
+
     // --- YENİ EKLENEN SIRALAMA KODU ---
     menuData.sort((a, b) => {
         // Fiyatın içindeki "TL" yazısını silip saf sayıya çeviriyoruz
