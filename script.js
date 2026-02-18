@@ -4,22 +4,34 @@ import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.
 const menuContainer = document.getElementById('menu-container');
 const navContainer = document.getElementById('category-nav');
 
-// Veritabanını dinle
+/// script.js içindeki onSnapshot kısmını bununla değiştir:
+
 onSnapshot(collection(db, "menu"), (snapshot) => {
-    const menuData = snapshot.docs.map(doc => ({
+    let menuData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
     }));
 
+    // --- YENİ EKLENEN SIRALAMA KODU ---
+    menuData.sort((a, b) => {
+        // Fiyatın içindeki "TL" yazısını silip saf sayıya çeviriyoruz
+        let fiyatA = parseFloat(a.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
+        let fiyatB = parseFloat(b.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
+        
+        return fiyatA - fiyatB; // Küçükten büyüğe sıralar
+    });
+    // ----------------------------------
+
+    console.log("Sıralanmış Veriler:", menuData);
+
     if (menuData.length === 0) {
-        menuContainer.innerHTML = "<p style='text-align:center; padding:20px;'>Menüde henüz ürün yok.</p>";
+        menuContainer.innerHTML = "<p style='text-align:center;'>Menü boş.</p>";
         return;
     }
 
     updateCategories(menuData);
     displayMenu(menuData);
 });
-
 function updateCategories(data) {
     navContainer.innerHTML = "";
     

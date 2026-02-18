@@ -102,27 +102,36 @@
         // ÇIKIŞ FONKSİYONU
         window.logout = () => signOut(auth);
 
-        // VERİLERİ LİSTELEME
         function listenData() {
-            onSnapshot(collection(db, "menu"), (snapshot) => {
-                const list = document.getElementById("product-list");
-                list.innerHTML = "";
-                snapshot.docs.forEach(docSnap => {
-                    const d = docSnap.data();
-                    list.innerHTML += `
-                        <tr>
-                            <td><img src="${d.Resim || 'https://via.placeholder.com/40'}" class="thumb"></td>
-                            <td>${d.isim}<br><small>${d.Kategori}</small></td>
-                            <td>${d.Fiyat}</td>
-                            <td>
-                                <button class="action-btn" style="background:#f39c12" onclick="editMode('${docSnap.id}', '${d.isim}', '${d.Fiyat}', '${d.Kategori}', '${d.Tanım||''}', '${d.Resim||''}')">Düzenle</button>
-                                <button class="action-btn" style="background:#e74c3c" onclick="del('${docSnap.id}')">Sil</button>
-                            </td>
-                        </tr>`;
-                });
-            });
-        }
+    onSnapshot(collection(db, "menu"), (snapshot) => {
+        let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+        // --- SIRALAMA KODU (Admin İçin) ---
+        docs.sort((a, b) => {
+            let fiyatA = parseFloat(a.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
+            let fiyatB = parseFloat(b.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
+            return fiyatA - fiyatB;
+        });
+        // ----------------------------------
+
+        const list = document.getElementById("product-list");
+        list.innerHTML = "";
+        
+        docs.forEach(data => {
+            list.innerHTML += `
+                <tr>
+                    <td><img src="${data.Resim || 'https://via.placeholder.com/40'}" class="thumb"></td>
+                    <td>${data.isim} <br> <small>${data.Kategori}</small></td>
+                    <td>${data.Fiyat}</td>
+                    <td>
+                        <button class="action-btn" style="background:#f39c12" onclick="editMode('${data.id}', '${data.isim}', '${data.Fiyat}', '${data.Kategori}', '${data.Tanım||''}', '${data.Resim||''}')">Düz</button>
+                        <button class="action-btn" style="background:#e74c3c" onclick="del('${data.id}')">Sil</button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
         // CRUD İŞLEMLERİ
         window.saveProduct = async () => {
             try {
