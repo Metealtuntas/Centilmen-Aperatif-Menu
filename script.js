@@ -41,13 +41,11 @@ function updateCategories(data) {
     // 2. SENİN İSTEDİĞİN SABİT SIRALAMA LİSTESİ
     // (Butonların hangi sırayla dizilmesini istiyorsan buraya yaz)
     const fixedOrder = [
-        "Sıcak İçecekler",
-        "Soğuk İçecekler",
-        "Tatlılar",
-        "Sandviçler",
         "Aperatif",
+        "Soğuk İçecekler",
+        "Sıcak İçecekler",
+        "Tatlılar",
         "İnternet Kafe",
-        "Playstation" 
     ];
 
     // 3. Kategorileri senin listene göre yeniden diz
