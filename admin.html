@@ -3,85 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönetim Paneli - Ürün Ekle</title>
+    <title>Yönetim Paneli - Tam Kontrol</title>
     <style>
-        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; }
+        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* Form Stilleri */
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #e67e22; color: white; padding: 12px; border: none; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #d35400; }
-        h2 { text-align: center; color: #333; }
-        .success { color: green; text-align: center; display: none; margin-top: 10px; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; width: 100%; margin-bottom: 5px; }
+        .btn-add { background-color: #27ae60; } /* Yeşil */
+        .btn-update { background-color: #e67e22; display: none; } /* Turuncu (Başta gizli) */
+        .btn-cancel { background-color: #7f8c8d; display: none; } /* Gri (Başta gizli) */
+
+        /* Liste Stilleri */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #333; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .action-btn { padding: 5px 10px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+        .edit-btn { background-color: #f39c12; }
+        .delete-btn { background-color: #c0392b; }
+        
+        img.thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <h2>Yeni Ürün Ekle</h2>
-    
-    <label>Ürün Adı:</label>
-    <input type="text" id="urunAdi" placeholder="Örn: Çilekli Limonata">
+    <div class="container">
+        <h2 id="form-title">Yeni Ürün Ekle</h2>
+        
+        <input type="hidden" id="docId">
 
-    <label>Fiyat:</label>
-    <input type="text" id="urunFiyat" placeholder="Örn: 90 TL">
+        <input type="text" id="urunAdi" placeholder="Ürün Adı (Örn: Latte)">
+        <input type="text" id="urunFiyat" placeholder="Fiyat (Örn: 90 TL)">
+        <select id="urunKategori">
+            <option value="Sıcak İçecekler">Sıcak İçecekler</option>
+            <option value="Soğuk İçecekler">Soğuk İçecekler</option>
+            <option value="Tatlılar">Tatlılar</option>
+            <option value="Aperatif">Aperatif</option>
+        </select>
+        <textarea id="urunTanim" placeholder="Açıklama"></textarea>
+        <input type="text" id="urunResim" placeholder="Resim Linki">
 
-    <label>Kategori:</label>
-    <select id="urunKategori">
-        <option value="Sıcak İçecekler">Sıcak İçecekler</option>
-        <option value="Soğuk İçecekler">Soğuk İçecekler</option>
-        <option value="Tatlılar">Tatlılar</option>
-        <option value="Aperatif">Aperatif</option>
-    </select>
+        <button onclick="saveProduct()" id="btn-save" class="btn btn-add">ÜRÜNÜ EKLE</button>
+        <button onclick="updateProduct()" id="btn-update" class="btn btn-update">GÜNCELLE KAYDET</button>
+        <button onclick="cancelEdit()" id="btn-cancel" class="btn btn-cancel">İPTAL</button>
+    </div>
 
-    <label>Açıklama (İsteğe Bağlı):</label>
-    <textarea id="urunTanim" placeholder="İçindekiler vb."></textarea>
-
-    <label>Resim Linki (URL):</label>
-    <input type="text" id="urunResim" placeholder="https://...">
-
-    <button onclick="urunEkle()">ÜRÜNÜ KAYDET</button>
-    <p id="mesaj" class="success">Ürün başarıyla eklendi!</p>
+    <div class="container" style="margin-top: 20px;">
+        <h3>Mevcut Ürün Listesi</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Resim</th>
+                    <th>Ürün Adı</th>
+                    <th>Fiyat</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="product-list">
+                </tbody>
+        </table>
+    </div>
 
     <script type="module">
         import { db } from "./firebase-config.js";
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // Global fonksiyona çeviriyoruz ki HTML'den çağrılabilsin
-        window.urunEkle = async function() {
+        // --- 1. ÜRÜNLERİ LİSTELEME ---
+        // Veritabanındaki değişiklikleri anlık dinle
+        onSnapshot(collection(db, "menu"), (snapshot) => {
+            const listContainer = document.getElementById("product-list");
+            listContainer.innerHTML = ""; // Listeyi temizle
+
+            snapshot.docs.forEach(docSnap => {
+                const item = docSnap.data();
+                const id = docSnap.id;
+
+                const row = `
+                    <tr>
+                        <td><img src="${item.Resim || 'https://via.placeholder.com/50'}" class="thumb"></td>
+                        <td>${item.isim} <br> <small style="color:gray">${item.Kategori}</small></td>
+                        <td>${item.Fiyat}</td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editMode('${id}', '${item.isim}', '${item.Fiyat}', '${item.Kategori}', '${item.Tanım || ''}', '${item.Resim || ''}')">Düzenle</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct('${id}')">Sil</button>
+                        </td>
+                    </tr>
+                `;
+                listContainer.innerHTML += row;
+            });
+        });
+
+        // --- 2. YENİ ÜRÜN EKLEME ---
+        window.saveProduct = async () => {
             const ad = document.getElementById("urunAdi").value;
             const fiyat = document.getElementById("urunFiyat").value;
-            const kategori = document.getElementById("urunKategori").value;
-            const tanim = document.getElementById("urunTanim").value;
-            const resim = document.getElementById("urunResim").value;
-
-            if (!ad || !fiyat) {
-                alert("Lütfen ürün adı ve fiyatını giriniz!");
-                return;
-            }
+            
+            if(!ad) return alert("Ürün adı giriniz!");
 
             try {
                 await addDoc(collection(db, "menu"), {
-                    isim: ad,        // Veritabanındaki 'isim' alanı
-                    Fiyat: fiyat,    // Veritabanındaki 'Fiyat' alanı
-                    Kategori: kategori, // Veritabanındaki 'Kategori' alanı
-                    Tanım: tanim,    // Veritabanındaki 'Tanım' alanı
-                    Resim: resim     // Veritabanındaki 'Resim' alanı
+                    isim: ad,
+                    Fiyat: fiyat,
+                    Kategori: document.getElementById("urunKategori").value,
+                    Tanım: document.getElementById("urunTanim").value,
+                    Resim: document.getElementById("urunResim").value
                 });
-                
-                document.getElementById("mesaj").style.display = "block";
-                
-                // Formu temizle
-                document.getElementById("urunAdi").value = "";
-                document.getElementById("urunFiyat").value = "";
-                document.getElementById("urunTanim").value = "";
-                document.getElementById("urunResim").value = "";
+                alert("Eklendi!");
+                clearForm();
+            } catch(e) { console.error(e); }
+        };
 
-                setTimeout(() => {
-                    document.getElementById("mesaj").style.display = "none";
-                }, 3000);
+        // --- 3. DÜZENLEME MODUNA GEÇME ---
+        window.editMode = (id, ad, fiyat, kategori, tanim, resim) => {
+            // Verileri forma doldur
+            document.getElementById("docId").value = id;
+            document.getElementById("urunAdi").value = ad;
+            document.getElementById("urunFiyat").value = fiyat;
+            document.getElementById("urunKategori").value = kategori;
+            document.getElementById("urunTanim").value = tanim;
+            document.getElementById("urunResim").value = resim;
 
-            } catch (e) {
-                console.error("Hata: ", e);
-                alert("Bir hata oluştu: " + e.message);
+            // Butonları değiştir
+            document.getElementById("btn-save").style.display = "none";
+            document.getElementById("btn-update").style.display = "block";
+            document.getElementById("btn-cancel").style.display = "block";
+            document.getElementById("form-title").innerText = "Ürünü Düzenle";
+            
+            // Sayfanın en üstüne kaydır
+            window.scrollTo(0,0);
+        };
+
+        // --- 4. GÜNCELLEME İŞLEMİ ---
+        window.updateProduct = async () => {
+            const id = document.getElementById("docId").value;
+            const docRef = doc(db, "menu", id);
+
+            try {
+                await updateDoc(docRef, {
+                    isim: document.getElementById("urunAdi").value,
+                    Fiyat: document.getElementById("urunFiyat").value,
+                    Kategori: document.getElementById("urunKategori").value,
+                    Tanım: document.getElementById("urunTanim").value,
+                    Resim: document.getElementById("urunResim").value
+                });
+                alert("Ürün Güncellendi!");
+                cancelEdit(); // Formu eski haline getir
+            } catch(e) {
+                alert("Hata: " + e.message);
             }
+        };
+
+        // --- 5. SİLME İŞLEMİ ---
+        window.deleteProduct = async (id) => {
+            if(confirm("Bu ürünü silmek istediğine emin misin?")) {
+                await deleteDoc(doc(db, "menu", id));
+            }
+        };
+
+        // --- FORM TEMİZLEME ---
+        window.cancelEdit = () => {
+            clearForm();
+            document.getElementById("btn-save").style.display = "block";
+            document.getElementById("btn-update").style.display = "none";
+            document.getElementById("btn-cancel").style.display = "none";
+            document.getElementById("form-title").innerText = "Yeni Ürün Ekle";
+        };
+
+        function clearForm() {
+            document.getElementById("docId").value = "";
+            document.getElementById("urunAdi").value = "";
+            document.getElementById("urunFiyat").value = "";
+            document.getElementById("urunTanim").value = "";
+            document.getElementById("urunResim").value = "";
         }
     </script>
 </body>
