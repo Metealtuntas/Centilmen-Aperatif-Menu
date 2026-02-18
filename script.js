@@ -35,9 +35,37 @@ onSnapshot(collection(db, "menu"), (snapshot) => {
 function updateCategories(data) {
     navContainer.innerHTML = "";
     
-    // DİKKAT: item.category yerine item.Kategori (Büyük harfle)
-    const categories = ["Hepsi", ...new Set(data.map(item => item.Kategori))];
+    // 1. Veritabanındaki mevcut kategorileri bul (Benzersiz olanlar)
+    let rawCategories = [...new Set(data.map(item => item.Kategori))];
 
+    // 2. SENİN İSTEDİĞİN SABİT SIRALAMA LİSTESİ
+    // (Butonların hangi sırayla dizilmesini istiyorsan buraya yaz)
+    const fixedOrder = [
+        "Sıcak İçecekler",
+        "Soğuk İçecekler",
+        "Tatlılar",
+        "Sandviçler",
+        "Aperatif",
+        "İnternet Kafe",
+        "Playstation" 
+    ];
+
+    // 3. Kategorileri senin listene göre yeniden diz
+    rawCategories.sort((a, b) => {
+        let indexA = fixedOrder.indexOf(a);
+        let indexB = fixedOrder.indexOf(b);
+
+        // Eğer senin listende olmayan yeni bir kategori varsa onu en sona at
+        if (indexA === -1) indexA = 999;
+        if (indexB === -1) indexB = 999;
+
+        return indexA - indexB;
+    });
+
+    // 4. "Hepsi" butonunu en başa ekle
+    const categories = ["Hepsi", ...rawCategories];
+
+    // 5. Butonları Ekrana Bas (Burası eski kodla aynı)
     categories.forEach(cat => {
         const btn = document.createElement('button');
         btn.innerText = cat;
@@ -51,7 +79,6 @@ function updateCategories(data) {
             if(cat === "Hepsi") {
                 displayMenu(data);
             } else {
-                // DİKKAT: item.category yerine item.Kategori
                 const filtered = data.filter(item => item.Kategori === cat);
                 displayMenu(filtered);
             }
