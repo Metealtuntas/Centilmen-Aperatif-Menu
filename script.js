@@ -5,7 +5,8 @@ import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.
 // --- AYARLAR: HTML'deki ID'lerini buraya yaz ---
 // Eğer ürünler ekrana gelmezse buradaki tırnak içindeki isimleri kontrol et.
 const menuContainer = document.getElementById("menu-container") || document.getElementById("menu") || document.getElementById("product-list");
-const navContainer = document.getElementById("btn-container") || document.getElementById("buttons") || document.getElementById("nav");
+// script.js dosyasındaki navContainer satırını bununla değiştir:
+const navContainer = document.getElementById("category-nav");
 
 // --- VERİ ÇEKME VE SIRALAMA ---
 onSnapshot(collection(db, "menu"), (snapshot) => {
