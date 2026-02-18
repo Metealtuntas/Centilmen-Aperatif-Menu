@@ -76,7 +76,7 @@ onSnapshot(collection(db, "menu"), (snapshot) => {
 
     updateCategories(menuData);
     displayMenu(menuData);
-});
+;
 function updateCategories(data) {
     navContainer.innerHTML = "";
     
