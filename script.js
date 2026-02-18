@@ -1,118 +1,89 @@
+// script.js - TAM VE DÜZELTİLMİŞ HALİ
 import { db } from "./firebase-config.js";
 import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-const menuContainer = document.getElementById('menu-container');
-const navContainer = document.getElementById('category-nav');
+// --- AYARLAR: HTML'deki ID'lerini buraya yaz ---
+// Eğer ürünler ekrana gelmezse buradaki tırnak içindeki isimleri kontrol et.
+const menuContainer = document.getElementById("menu-container") || document.getElementById("menu") || document.getElementById("product-list");
+const navContainer = document.getElementById("btn-container") || document.getElementById("buttons") || document.getElementById("nav");
 
-/// script.js içindeki onSnapshot kısmını bununla değiştir:
-
+// --- VERİ ÇEKME VE SIRALAMA ---
 onSnapshot(collection(db, "menu"), (snapshot) => {
     let menuData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
     }));
 
-    // --- 1. SENİN İSTEDİĞİN KATEGORİ SIRALAMASI ---
-    // Buraya hangi kategorinin önce gelmesini istiyorsan o sırayla yaz.
+    // 1. KATEGORİ SIRALAMASI (İstediğin Sıra)
     const kategoriSiralamasi = [
         "Aperatif",
         "Soğuk İçecekler",
         "Sıcak İçecekler",
-        "Sandviçler",
         "Tatlılar",
         "İnternet Kafe",
-        "Playstation"
     ];
 
-    // --- 2. SIRALAMA MOTORU ---
+    // 2. SIRALAMA MOTORU
     menuData.sort((a, b) => {
         // A) Önce Kategori Sırasını Bul
         let siraA = kategoriSiralamasi.indexOf(a.Kategori);
         let siraB = kategoriSiralamasi.indexOf(b.Kategori);
 
-        // Listede olmayan (yeni eklenmiş) bir kategori varsa en sona at
+        // Listede olmayan varsa en sona at
         if (siraA === -1) siraA = 999;
         if (siraB === -1) siraB = 999;
 
-        // B) Eğer kategoriler farklıysa, kategori sırasına göre diz
+        // B) Kategoriler farklıysa, kategoriye göre diz
         if (siraA !== siraB) {
             return siraA - siraB;
         }
 
-        // C) Eğer kategoriler AYNIYSA (ikisi de "Soğuk İçecekler" ise), Fiyata göre diz
+        // C) Kategoriler aynıysa, Fiyata göre diz (Ucuzdan pahalıya)
         let fiyatA = parseFloat(a.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
         let fiyatB = parseFloat(b.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
         
-        return fiyatA - fiyatB; // Ucuzdan pahalıya
+        return fiyatA - fiyatB;
     });
 
-    console.log("Özel Sıralı Veriler:", menuData);
-
+    // Veri yoksa uyarı ver
     if (menuData.length === 0) {
-        menuContainer.innerHTML = "<p style='text-align:center;'>Menü boş.</p>";
+        if(menuContainer) menuContainer.innerHTML = "<div style='text-align:center; padding:20px;'>Menü şu an boş.</div>";
         return;
     }
 
-    updateCategories(menuData); // Butonları oluştur
-    displayMenu(menuData);      // Ürünleri listele
-});
-
-    // --- YENİ EKLENEN SIRALAMA KODU ---
-    menuData.sort((a, b) => {
-        // Fiyatın içindeki "TL" yazısını silip saf sayıya çeviriyoruz
-        let fiyatA = parseFloat(a.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
-        let fiyatB = parseFloat(b.Fiyat.toString().replace(/[^0-9.]/g, '')) || 0;
-        
-        return fiyatA - fiyatB; // Küçükten büyüğe sıralar
-    });
-    // ----------------------------------
-
-    console.log("Sıralanmış Veriler:", menuData);
-
-    if (menuData.length === 0) {
-        menuContainer.innerHTML = "<p style='text-align:center;'>Menü boş.</p>";
-        return;
-    }
-
+    // Fonksiyonları çalıştır
     updateCategories(menuData);
     displayMenu(menuData);
-;
+});
+
+// --- KATEGORİ BUTONLARINI OLUŞTUR ---
 function updateCategories(data) {
+    if(!navContainer) return; // Hata almamak için kontrol
     navContainer.innerHTML = "";
     
-    // 1. Veritabanındaki mevcut kategorileri bul (Benzersiz olanlar)
+    // Benzersiz kategorileri bul
     let rawCategories = [...new Set(data.map(item => item.Kategori))];
 
-    // 2. SENİN İSTEDİĞİN SABİT SIRALAMA LİSTESİ
-    // (Butonların hangi sırayla dizilmesini istiyorsan buraya yaz)
+    // Senin sıralama listene göre diz
     const fixedOrder = [
-        "Aperatif",
-        "Soğuk İçecekler",
-        "Sıcak İçecekler",
-        "Tatlılar",
-        "İnternet Kafe",
+        "Aperatif", "Soğuk İçecekler", "Sıcak İçecekler", 
+        "Sandviçler", "Tatlılar", "İnternet Kafe", "Playstation"
     ];
 
-    // 3. Kategorileri senin listene göre yeniden diz
     rawCategories.sort((a, b) => {
         let indexA = fixedOrder.indexOf(a);
         let indexB = fixedOrder.indexOf(b);
-
-        // Eğer senin listende olmayan yeni bir kategori varsa onu en sona at
         if (indexA === -1) indexA = 999;
         if (indexB === -1) indexB = 999;
-
         return indexA - indexB;
     });
 
-    // 4. "Hepsi" butonunu en başa ekle
     const categories = ["Hepsi", ...rawCategories];
 
-    // 5. Butonları Ekrana Bas (Burası eski kodla aynı)
     categories.forEach(cat => {
         const btn = document.createElement('button');
         btn.innerText = cat;
-        btn.className = 'category-btn';
+        btn.className = 'category-btn'; // CSS class'ın
         if(cat === "Hepsi") btn.classList.add('active');
         
         btn.onclick = () => {
@@ -130,17 +101,25 @@ function updateCategories(data) {
     });
 }
 
+// --- MENÜYÜ EKRANA BAS ---
 function displayMenu(items) {
-    menuContainer.innerHTML = items.map(item => `
-        <div class="menu-item">
-            <img src="${item.Resim}" alt="${item.isim}" onerror="this.src='https://via.placeholder.com/100'">
-            <div class="item-info">
-                <h3>${item.isim}</h3>
-                
-                <p>${item.Tanım || ''}</p>
-                
-                <span class="price">${item.Fiyat}</span>
+    if(!menuContainer) return;
+    menuContainer.innerHTML = "";
+    
+    items.forEach(item => {
+        // Kart HTML yapısı (Senin tasarımına uygun basit yapı)
+        const html = `
+            <div class="menu-item">
+                <img src="${item.Resim || 'https://via.placeholder.com/150'}" alt="${item.isim}" class="item-img">
+                <div class="item-info">
+                    <div class="item-header">
+                        <h3 class="item-title">${item.isim}</h3>
+                        <span class="item-price">${item.Fiyat}</span>
+                    </div>
+                    <p class="item-desc">${item.Tanım || ''}</p>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+        menuContainer.innerHTML += html;
+    });
 }
