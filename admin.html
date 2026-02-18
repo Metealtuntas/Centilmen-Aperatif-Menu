@@ -6,38 +6,22 @@
     <title>Yönetici Paneli</title>
     <style>
         body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background-color: #f4f4f4; }
-        
-        /* GİRİŞ EKRANI STİLLERİ */
-        #login-screen {
-            max-width: 400px; margin: 50px auto; background: white; padding: 30px;
-            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;
-        }
-        
-        /* PANEL STİLLERİ (Başlangıçta Gizli) */
+        #login-screen { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         #admin-panel { display: none; }
         .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        
-        /* Form Elemanları */
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0 16px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        
-        button { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; color: white; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
         .btn-login { background-color: #3498db; }
-        .btn-logout { background-color: #c0392b; width: auto; padding: 8px 15px; float: right; font-size: 14px; }
+        .btn-logout { background-color: #c0392b; width: auto; float: right; padding: 8px 15px; font-size: 14px; }
         .btn-add { background-color: #27ae60; }
         .btn-update { background-color: #e67e22; display: none; }
-        .btn-cancel { background-color: #7f8c8d; display: none; margin-top: 5px; }
-
-        /* Hata Mesajı */
-        .error { color: red; font-size: 14px; margin-top: 10px; min-height: 20px; }
-
-        /* Tablo Stilleri */
+        .btn-cancel { background-color: #7f8c8d; display: none; }
+        .error { color: red; font-size: 14px; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #333; color: white; }
+        img.thumb { width: 40px; height: 40px; object-fit: cover; }
         .action-btn { padding: 5px 10px; color: white; border-radius: 4px; cursor: pointer; margin-right: 5px; width: auto; font-size: 12px; }
-        .edit-btn { background-color: #f39c12; }
-        .delete-btn { background-color: #e74c3c; }
-        img.thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -58,7 +42,8 @@
 
         <div class="container">
             <h3 id="form-title">Yeni Ürün Ekle</h3>
-            <input type="hidden" id="docId"> <input type="text" id="urunAdi" placeholder="Ürün Adı">
+            <input type="hidden" id="docId">
+            <input type="text" id="urunAdi" placeholder="Ürün Adı">
             <input type="text" id="urunFiyat" placeholder="Fiyat (Örn: 90 TL)">
             <select id="urunKategori">
                 <option value="Sıcak İçecekler">Sıcak İçecekler</option>
@@ -68,7 +53,6 @@
             </select>
             <textarea id="urunTanim" placeholder="Açıklama" rows="2"></textarea>
             <input type="text" id="urunResim" placeholder="Resim Linki">
-
             <button onclick="saveProduct()" id="btn-save" class="btn-add">ÜRÜNÜ EKLE</button>
             <button onclick="updateProduct()" id="btn-update" class="btn-update">GÜNCELLE KAYDET</button>
             <button onclick="cancelEdit()" id="btn-cancel" class="btn-cancel">İPTAL</button>
@@ -76,90 +60,69 @@
 
         <div class="container">
             <h3>Mevcut Liste</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Görsel</th>
-                        <th>Ürün</th>
-                        <th>Fiyat</th>
-                        <th>İşlem</th>
-                    </tr>
-                </thead>
-                <tbody id="product-list">
-                    </tbody>
+            <table id="product-table">
+                <thead><tr><th>Resim</th><th>Ürün</th><th>Fiyat</th><th>İşlem</th></tr></thead>
+                <tbody id="product-list"></tbody>
             </table>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-        
-        // Config dosyasından bilgileri al
-        import { firebaseConfig } from "./firebase-config.js";
+        // ÖNEMLİ: Artık firebaseConfig aramıyoruz, direkt auth ve db alıyoruz
+        import { auth, db } from "./firebase-config.js";
+        import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // --- GİRİŞ VE GÜVENLİK ---
-        
-        // Kullanıcı giriş yapmış mı kontrol et
+        // GİRİŞ KONTROLÜ
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Giriş varsa Paneli göster, Girişi gizle
+                console.log("Giriş yapılmış:", user.email);
                 document.getElementById("login-screen").style.display = "none";
                 document.getElementById("admin-panel").style.display = "block";
-                listenData(); // Verileri çekmeye başla
+                listenData();
             } else {
-                // Giriş yoksa Girişi göster, Paneli gizle
+                console.log("Giriş bekleniyor...");
                 document.getElementById("login-screen").style.display = "block";
                 document.getElementById("admin-panel").style.display = "none";
             }
         });
 
+        // GİRİŞ FONKSİYONU
         window.login = () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            
             signInWithEmailAndPassword(auth, email, password)
                 .catch((error) => {
                     document.getElementById("login-error").innerText = "Hatalı e-posta veya şifre!";
+                    console.error(error);
                 });
         };
 
-        window.logout = () => {
-            signOut(auth);
-        };
+        // ÇIKIŞ FONKSİYONU
+        window.logout = () => signOut(auth);
 
-        // --- VERİTABANI İŞLEMLERİ ---
-
+        // VERİLERİ LİSTELEME
         function listenData() {
             onSnapshot(collection(db, "menu"), (snapshot) => {
                 const list = document.getElementById("product-list");
                 list.innerHTML = "";
-                
                 snapshot.docs.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const id = docSnap.id;
-                    
+                    const d = docSnap.data();
                     list.innerHTML += `
                         <tr>
-                            <td><img src="${data.Resim || 'https://via.placeholder.com/40'}" class="thumb"></td>
-                            <td>${data.isim} <br> <small>${data.Kategori}</small></td>
-                            <td>${data.Fiyat}</td>
+                            <td><img src="${d.Resim || 'https://via.placeholder.com/40'}" class="thumb"></td>
+                            <td>${d.isim}<br><small>${d.Kategori}</small></td>
+                            <td>${d.Fiyat}</td>
                             <td>
-                                <button class="action-btn edit-btn" onclick="editMode('${id}', '${data.isim}', '${data.Fiyat}', '${data.Kategori}', '${data.Tanım || ''}', '${data.Resim || ''}')">Düzenle</button>
-                                <button class="action-btn delete-btn" onclick="del('${id}')">Sil</button>
+                                <button class="action-btn" style="background:#f39c12" onclick="editMode('${docSnap.id}', '${d.isim}', '${d.Fiyat}', '${d.Kategori}', '${d.Tanım||''}', '${d.Resim||''}')">Düz</button>
+                                <button class="action-btn" style="background:#e74c3c" onclick="del('${docSnap.id}')">Sil</button>
                             </td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
             });
         }
 
-        // Global fonksiyonlar (window nesnesine bağlıyoruz)
+        // CRUD İŞLEMLERİ
         window.saveProduct = async () => {
             try {
                 await addDoc(collection(db, "menu"), {
@@ -190,34 +153,34 @@
         };
 
         window.del = async (id) => {
-            if(confirm("Silmek istediğine emin misin?")) {
-                await deleteDoc(doc(db, "menu", id));
-            }
+            if(confirm("Silinecek?")) await deleteDoc(doc(db, "menu", id));
         };
 
-        // --- YARDIMCI FONKSİYONLAR ---
-        window.editMode = (id, ad, fiyat, kat, tanim, resim) => {
+        // FORM YARDIMCILARI
+        window.editMode = (id, ad, fy, kat, tan, res) => {
             document.getElementById("docId").value = id;
             document.getElementById("urunAdi").value = ad;
-            document.getElementById("urunFiyat").value = fiyat;
+            document.getElementById("urunFiyat").value = fy;
             document.getElementById("urunKategori").value = kat;
-            document.getElementById("urunTanim").value = tanim;
-            document.getElementById("urunResim").value = resim;
-
-            document.getElementById("btn-save").style.display = "none";
-            document.getElementById("btn-update").style.display = "block";
-            document.getElementById("btn-cancel").style.display = "block";
+            document.getElementById("urunTanim").value = tan;
+            document.getElementById("urunResim").value = res;
+            
+            toggleBtns(true);
             document.getElementById("form-title").innerText = "Ürünü Düzenle";
             window.scrollTo(0,0);
         };
 
         window.cancelEdit = () => {
             clearForm();
-            document.getElementById("btn-save").style.display = "block";
-            document.getElementById("btn-update").style.display = "none";
-            document.getElementById("btn-cancel").style.display = "none";
+            toggleBtns(false);
             document.getElementById("form-title").innerText = "Yeni Ürün Ekle";
         };
+
+        function toggleBtns(editMode) {
+            document.getElementById("btn-save").style.display = editMode ? "none" : "block";
+            document.getElementById("btn-update").style.display = editMode ? "block" : "none";
+            document.getElementById("btn-cancel").style.display = editMode ? "block" : "none";
+        }
 
         function clearForm() {
             document.getElementById("docId").value = "";
