@@ -63,9 +63,9 @@ function updateCategories(data) {
 function displayMenu(items) {
     menuContainer.innerHTML = items.map(item => `
         <div class="menu-item">
-            <img src="${item.img || 'https://via.placeholder.com/100'}" alt="${item.name}">
+            <img src="${item.img || 'https://via.placeholder.com/100'}" alt="${item.isim}">
             <div class="item-info">
-                <h3>${item.name}</h3>
+                <h3>${item.isim}</h3>
                 <p>${item.desc || ''}</p>
                 <span class="price">${item.price}</span>
             </div>
