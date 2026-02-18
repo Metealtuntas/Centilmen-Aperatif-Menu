@@ -5,7 +5,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth
 
 // SENİN BİLGİLERİN (Burası senin attığın resimdeki gibi kalsın)
 const firebaseConfig = {
-  apiKey: "AIzaSyAFQqlXvRGnet7vKJLwtbVTkHSn0_IBnBs",
+  apiKey: "AIzaSyAFQglXvRGnet7vKJLwtbVTkHSn0_IBnBs",
   authDomain: "menu-25142.firebaseapp.com",
   projectId: "menu-25142",
   storageBucket: "menu-25142.firebasestorage.app",
