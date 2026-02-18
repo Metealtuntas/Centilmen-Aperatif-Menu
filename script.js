@@ -51,7 +51,7 @@ function updateCategories(data) {
 function displayMenu(items) {
     menuContainer.innerHTML = items.map(item => `
         <div class="menu-item">
-            <img src="https://via.placeholder.com/100" alt="${item.isim}">
+            <img src="${item.Resim}" alt="${item.isim}" onerror="this.src='https://via.placeholder.com/100'">
             <div class="item-info">
                 <h3>${item.isim}</h3>
                 
