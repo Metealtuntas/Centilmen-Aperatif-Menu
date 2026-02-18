@@ -94,3 +94,8 @@ nav {
     transform: translateY(-5px); /* Kartı 5px yukarı kaldırır */
     box-shadow: 0 10px 20px rgba(0,0,0,0.12); /* Gölgeyi derinleştirir */
 }
+/* Fiyat Rengi */
+.item-price {
+    color: #e67e22; /* Turuncu renk kodu */
+    font-weight: bold; /* Biraz daha kalın olsun, dikkat çeksin */
+}
