@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli - Ürün Ekle</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #e67e22; color: white; padding: 12px; border: none; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #d35400; }
+        h2 { text-align: center; color: #333; }
+        .success { color: green; text-align: center; display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>Yeni Ürün Ekle</h2>
+    
+    <label>Ürün Adı:</label>
+    <input type="text" id="urunAdi" placeholder="Örn: Çilekli Limonata">
+
+    <label>Fiyat:</label>
+    <input type="text" id="urunFiyat" placeholder="Örn: 90 TL">
+
+    <label>Kategori:</label>
+    <select id="urunKategori">
+        <option value="Sıcak İçecekler">Sıcak İçecekler</option>
+        <option value="Soğuk İçecekler">Soğuk İçecekler</option>
+        <option value="Tatlılar">Tatlılar</option>
+        <option value="Aperatif">Aperatif</option>
+    </select>
+
+    <label>Açıklama (İsteğe Bağlı):</label>
+    <textarea id="urunTanim" placeholder="İçindekiler vb."></textarea>
+
+    <label>Resim Linki (URL):</label>
+    <input type="text" id="urunResim" placeholder="https://...">
+
+    <button onclick="urunEkle()">ÜRÜNÜ KAYDET</button>
+    <p id="mesaj" class="success">Ürün başarıyla eklendi!</p>
+
+    <script type="module">
+        import { db } from "./firebase-config.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // Global fonksiyona çeviriyoruz ki HTML'den çağrılabilsin
+        window.urunEkle = async function() {
+            const ad = document.getElementById("urunAdi").value;
+            const fiyat = document.getElementById("urunFiyat").value;
+            const kategori = document.getElementById("urunKategori").value;
+            const tanim = document.getElementById("urunTanim").value;
+            const resim = document.getElementById("urunResim").value;
+
+            if (!ad || !fiyat) {
+                alert("Lütfen ürün adı ve fiyatını giriniz!");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "menu"), {
+                    isim: ad,        // Veritabanındaki 'isim' alanı
+                    Fiyat: fiyat,    // Veritabanındaki 'Fiyat' alanı
+                    Kategori: kategori, // Veritabanındaki 'Kategori' alanı
+                    Tanım: tanim,    // Veritabanındaki 'Tanım' alanı
+                    Resim: resim     // Veritabanındaki 'Resim' alanı
+                });
+                
+                document.getElementById("mesaj").style.display = "block";
+                
+                // Formu temizle
+                document.getElementById("urunAdi").value = "";
+                document.getElementById("urunFiyat").value = "";
+                document.getElementById("urunTanim").value = "";
+                document.getElementById("urunResim").value = "";
+
+                setTimeout(() => {
+                    document.getElementById("mesaj").style.display = "none";
+                }, 3000);
+
+            } catch (e) {
+                console.error("Hata: ", e);
+                alert("Bir hata oluştu: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
